@@ -1,0 +1,42 @@
+---
+- hosts: tag_Name_hadoop_data_node
+  become: true
+  vars:
+    - directory: /dn
+  vars_prompt:
+    - name: namenode
+      prompt: "Enter namenode IP address"
+      private: no
+  
+  tasks:
+  - name: "Creating file"
+    file: 
+      state: directory
+      path: "{{ directory }}"
+
+  - name: "Configuring Hadoop hdfs-site.xml"
+    blockinfile:
+      path: "/etc/hadoop/hdfs-site.xml"
+      insertafter: "<configuration>"
+      block: 
+        "<property>\n
+         <name>dfs.data.dir</name>\n
+         <value>{{ directory }}</value>\n
+         </property>"
+    register: res1
+         
+  - name: "Configuring Hadoop core-site.xml"
+    blockinfile:
+      path: "/etc/hadoop/core-site.xml"
+      insertafter: "<configuration>"
+      block: 
+        "<property>\n
+         <name>fs.default.name</name>\n
+         <value>hdfs://{{ namenode }}:9001</value>\n
+         </property>"
+    register: res2
+         
+  - name: "Starting datanode"
+    shell: "hadoop-daemon.sh start datanode"
+    when: res1['changed'] == true or res2['changed'] == true
+    

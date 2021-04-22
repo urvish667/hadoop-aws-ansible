@@ -1,0 +1,23 @@
+---
+- hosts: tag_Name_hadoop_task_tracker
+  become: true
+  vars_prompt:
+    - name: jobtracker
+      prompt: "Enter job tracker IP address"
+      private: no
+
+  tasks:   
+  - name: "Configuring Hadoop mapred-site.xml"
+    blockinfile:
+      path: /etc/hadoop/mapred-site.xml
+      insertafter: "<configuration>"
+      block:
+        "<property>\n
+        <name>mapred.job.tracker</name>
+        <value>{{ jobtracker }}:9002</value>
+        </property>"
+    register: result
+
+  - name: "Starting job tracker"
+    shell: hadoop-daemon.sh start tasktracker
+    when: result['changed'] == true

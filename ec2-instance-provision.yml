@@ -1,0 +1,69 @@
+---
+- hosts: localhost
+  vars_files: 
+    - secret.yml
+  tasks:
+  - name: Hadoop name node provisioning
+    ec2:
+      image: ami-06932ae9961fdb800
+      instance_type: t2.micro
+      count: 1
+      instance_tags:
+        Name: hadoop-name-node
+      group_id: sg-01758914f0cdc04ff
+      key_name: MyKeyPair
+      aws_access_key: "{{ access_key }}"
+      aws_secret_key: "{{ secret_key }}"
+      region: ap-south-1
+      
+  - name: Hadoop data node provisioning
+    ec2:
+      image: ami-06932ae9961fdb800
+      instance_type: t2.micro
+      count: 1
+      instance_tags:
+        Name: hadoop-data-node
+      group_id: sg-01758914f0cdc04ff
+      key_name: MyKeyPair
+      aws_access_key: "{{ access_key }}"
+      aws_secret_key: "{{ secret_key }}"
+      region: ap-south-1
+
+  - name: Hadoop job tracker provisioning
+    ec2:
+      image: ami-06932ae9961fdb800
+      instance_type: t2.micro
+      count: 1
+      instance_tags:
+        Name: hadoop-job-tracker
+      group_id: sg-01758914f0cdc04ff
+      key_name: MyKeyPair
+      aws_access_key: "{{ access_key }}"
+      aws_secret_key: "{{ secret_key }}"
+      region: ap-south-1
+
+  - name: Hadoop task tracker provisioning
+    ec2:
+      image: ami-06932ae9961fdb800
+      instance_type: t2.micro
+      count: 1
+      instance_tags:
+        Name: hadoop-task-tracker
+      group_id: sg-01758914f0cdc04ff
+      key_name: MyKeyPair
+      aws_access_key: "{{ access_key }}"
+      aws_secret_key: "{{ secret_key }}"
+      region: ap-south-1
+
+  - name: Hadoop client provisioning
+    ec2:
+      image: ami-06932ae9961fdb800
+      instance_type: t2.micro
+      count: 1
+      instance_tags:
+        Name: hadoop-client
+      group_id: sg-01758914f0cdc04ff
+      key_name: MyKeyPair
+      aws_access_key: "{{ access_key }}"
+      aws_secret_key: "{{ secret_key }}"
+      region: ap-south-1

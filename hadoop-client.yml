@@ -1,0 +1,33 @@
+---
+- hosts: tag_Name_hadoop_client
+  become: true
+  vars_prompt:
+    - name: namenode
+      prompt: "Enter namenode IP address"
+      private: no
+    - name: jobtracker
+      prompt: "Enter job tracker IP address"
+      private: no
+  
+  tasks: 
+  - name: "Configuring Hadoop core-site.xml"
+    blockinfile:
+      path: "/etc/hadoop/core-site.xml"
+      insertafter: "<configuration>"
+      block: 
+        "<property>\n
+         <name>fs.default.name</name>\n
+         <value>hdfs://{{ namenode }}:9001</value>\n
+         </property>"
+
+  - name: "Configuring Hadoop mapred-site.xml"
+    blockinfile:
+      path: /etc/hadoop/mapred-site.xml
+      insertafter: "<configuration>"
+      block:
+        "<property>\n
+        <name>mapred.job.tracker</name>
+        <value>{{ jobtracker }}:9002</value>
+        </property>"
+
+    

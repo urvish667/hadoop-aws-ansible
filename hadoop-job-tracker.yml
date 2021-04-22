@@ -1,0 +1,39 @@
+---
+- hosts: tag_Name_hadoop_job_tracker
+  become: true
+
+  vars_prompt:
+    - name: namenode
+      prompt: "Enter name node IP address"
+      private: no
+
+  tasks:   
+  - name: "Configuring Hadoop mapred-site.xml"
+    blockinfile:
+      path: /etc/hadoop/mapred-site.xml
+      insertafter: "<configuration>"
+      block:
+        "<property>\n
+        <name>mapred.job.tracker</name>
+        <value>0.0.0.0:9002</value>
+        </property>"
+    register: res1
+
+  - name: "Configuring Hadoop core-site.xml"
+    blockinfile:
+      path: "/etc/hadoop/core-site.xml"
+      insertafter: "<configuration>"
+      block: 
+        "<property>\n
+         <name>fs.default.name</name>\n
+         <value>hdfs://{{ namenode }}:9001</value>\n
+         </property>"
+    register: res2
+
+  - name: "Starting job tracker"
+    shell: hadoop-daemon.sh start jobtracker
+    when: res1['changed'] == true or res1['changed'] == true
+
+  - name: "Printing the private IPv4"
+    debug:
+      var: ansible_facts['all_ipv4_addresses']
